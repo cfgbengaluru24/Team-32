@@ -14,6 +14,7 @@ import ScheduleVisitScreen from './components/pages/schedule';
 import OralHealthScreen from './components/pages/oralForm';
 import ChooseTypeOfInfo from './components/pages/ChooseTypeOfInfo';
 import ScheduledVisitsScreen from './components/pages/ShowScheduledVisits';
+import NextScreen from './components/pages/pocDataUpload';
 import pateintInformation from './components/pages/patientInformation';
 // import { registerBackgroundFetch } from './hooks/useNetworkMonitor';
 const Stack = createNativeStackNavigator();
@@ -30,6 +31,7 @@ function App() {
         <Stack.Screen name="ChooseTypeOfInfo" component={ChooseTypeOfInfo}    options={{ headerShown: false }}  />
         <Stack.Screen name="ScheduledVisits" component={ScheduledVisitsScreen}    options={{ headerShown: false }}  />
         <Stack.Screen name="PocCamera" component={PocConnectPage} />
+        <Stack.Screen name="displayPhotoPage" component={NextScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
