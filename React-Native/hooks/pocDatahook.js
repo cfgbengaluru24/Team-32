@@ -41,7 +41,6 @@ export async function pushDataToAPI() {
                 type: 'image/jpeg',
             });
             formData.append('userInput', userInput);
-
             const response = await fetch('https://example.com/api/upload', {
                 method: 'POST',
                 headers: {
@@ -49,7 +48,6 @@ export async function pushDataToAPI() {
                 },
                 body: JSON.stringify(data),
             });
-
             if (response.ok) {
                 console.log(`Successfully uploaded data with key: ${key}`);
                 await AsyncStorage.removeItem(key);

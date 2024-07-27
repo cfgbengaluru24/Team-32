@@ -15,17 +15,10 @@ import OralHealthScreen from './components/pages/oralForm';
 import ChooseTypeOfInfo from './components/pages/ChooseTypeOfInfo';
 import ScheduledVisitsScreen from './components/pages/ShowScheduledVisits';
 import pateintInformation from './components/pages/patientInformation';
-import { registerBackgroundFetch } from './hooks/useNetworkMonitor';
+// import { registerBackgroundFetch } from './hooks/useNetworkMonitor';
 const Stack = createNativeStackNavigator();
 
 function App() {
-  useEffect(() => {
-    const setupBackgroundFetch = async () => {
-      // await registerBackgroundFetch();
-    };
-
-    setupBackgroundFetch();
-  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator >
@@ -36,6 +29,7 @@ function App() {
         <Stack.Screen name="oralHealth" component={OralHealthScreen}    options={{ headerShown: false }}  />
         <Stack.Screen name="ChooseTypeOfInfo" component={ChooseTypeOfInfo}    options={{ headerShown: false }}  />
         <Stack.Screen name="ScheduledVisits" component={ScheduledVisitsScreen}    options={{ headerShown: false }}  />
+        <Stack.Screen name="PocCamera" component={PocConnectPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
