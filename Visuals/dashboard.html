@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <title>Patients Dashboard and Search</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         background-color: #1e1e1e;
+         color: #ffffff;
+         margin: 20px;
+         padding: 0;
+      }
+      h1, h2 {
+         color: #ffffff;
+         text-align: center;
+      }
+      .search-container, .charts-container {
+         margin-bottom: 20px;
+         text-align: center;
+      }
+      input[type="number"] {
+         padding: 5px;
+         border-radius: 4px;
+         border: 1px solid #ccc;
+         margin-right: 10px;
+      }
+      button {
+         padding: 5px 10px;
+         border-radius: 4px;
+         border: none;
+         background-color: #ffa500;
+         color: #1e1e1e;
+         cursor: pointer;
+      }
+      .charts-container {
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: center;
+      }
+      .chart-container {
+         flex: 1 1 300px;
+         max-width: 300px;
+         margin: 10px;
+         border: 1px solid #444;
+         border-radius: 4px;
+         background-color: #2c2c2c;
+         padding: 10px;
+      }
+      canvas {
+         width: 100% !important;
+         height: 250px !important;
+      }
+      table {
+         width: 100%;
+         border-collapse: collapse;
+         margin: 20px auto;
+         background-color: #2c2c2c;
+         color: #fff;
+      }
+      th, td {
+         padding: 10px;
+         border: 1px solid #444;
+         text-align: left;
+      }
+      th {
+         background-color: #333;
+      }
+      .user-info {
+         margin-bottom: 10px;
+         padding: 10px;
+         border: 1px solid #ddd;
+         border-radius: 4px;
+         background-color: #2c2c2c;
+      }
+   </style>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
+</head>
+<body>
+   <!-- Search User by Token ID -->
+   <div class="search-container">
+      <h1>Search User by Token ID</h1>
+      <input type="number" id="tokenID" placeholder="Enter Token ID" />
+      <button onclick="searchUser()">Search</button>
+   </div>
+   <div id="data-container"></div>
+
+   <!-- Patients Dashboard -->
+   <div class="charts-container">
+      <div class="chart-container">
+         <h2>Total Patients by Location</h2>
+         <canvas id="barChart" aria-label="chart"></canvas>
+      </div>
+      <div class="chart-container">
+         <h2>Average Age by Location</h2>
+         <canvas id="lineChart" aria-label="chart"></canvas>
+      </div>
+      <div class="chart-container">
+         <h2>Gender Distribution</h2>
+         <canvas id="pieChart" aria-label="chart"></canvas>
+      </div>
+   </div>
+
+   <script>
+      async function fetchData() {
+         try {
+            const response = await fetch('http://localhost:8080/data/patients/all');
+            if (!response.ok) {
+               throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+         } catch (error) {
+            console.error('Error fetching data:', error);
+            return null;
+         }
+      }
+
+      function extractPatientData(data) {
+         return data.flatMap(item => item.patientData);
+      }
+
+      function aggregateDataByLocation(data) {
+         const locationCount = {};
+         const ageByLocation = {};
+
+         data.forEach(patient => {
+            const location = patient.location;
+            if (locationCount[location]) {
+               locationCount[location]++;
+               ageByLocation[location].totalAge += patient.age;
+               ageByLocation[location].count++;
+            } else {
+               locationCount[location] = 1;
+               ageByLocation[location] = { totalAge: patient.age, count: 1 };
+            }
+         });
+
+         return { locationCount, ageByLocation };
+      }
+
+      function getGenderDistribution(data) {
+         const genderCount = { Male: 0, Female: 0 };
+
+         data.forEach(patient => {
+            if (genderCount[patient.sex]) {
+               genderCount[patient.sex]++;
+            } else {
+               genderCount[patient.sex] = 1;
+            }
+         });
+
+         return genderCount;
+      }
+
+      async function createBarChart() {
+         const data = await fetchData();
+         if (!data) {
+            document.getElementById('barChart').innerHTML = '<p>No data available.</p>';
+            return;
+         }
+
+         const patientData = extractPatientData(data);
+
+         const aggregatedData = aggregateDataByLocation(patientData);
+         const labels = Object.keys(aggregatedData.locationCount);
+         const dataValues = Object.values(aggregatedData.locationCount);
+
+         const ctx = document.getElementById('barChart').getContext('2d');
+         new Chart(ctx, {
+            type: 'bar',
+            data: {
+               labels: labels,
+               datasets: [{
+                  label: 'Total Patients',
+                  data: dataValues,
+                  backgroundColor: 'rgba(255, 165, 0, 0.6)',
+                  borderColor: 'rgba(255, 165, 0, 1)',
+                  borderWidth: 1
+               }]
+            },
+            options: {
+               responsive: true,
+               scales: {
+                  y: {
+                     beginAtZero: true,
+                     grid: {
+                        color: '#666'
+                     },
+                     ticks: {
+                        color: '#fff'
+                     }
+                  },
+                  x: {
+                     grid: {
+                        color: '#666'
+                     },
+                     ticks: {
+                        color: '#fff'
+                     }
+                  }
+               }
+            }
+         });
+      }
+
+      async function createLineChart() {
+         const data = await fetchData();
+         if (!data) {
+            document.getElementById('lineChart').innerHTML = '<p>No data available.</p>';
+            return;
+         }
+
+         const patientData = extractPatientData(data);
+
+         const aggregatedData = aggregateDataByLocation(patientData);
+         const labels = Object.keys(aggregatedData.ageByLocation);
+         const ageAverages = labels.map(location => (aggregatedData.ageByLocation[location].totalAge / aggregatedData.ageByLocation[location].count).toFixed(2));
+
+         const ctx = document.getElementById('lineChart').getContext('2d');
+         new Chart(ctx, {
+            type: 'line',
+            data: {
+               labels: labels,
+               datasets: [{
+                  label: 'Average Age',
+                  data: ageAverages,
+                  backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                  borderColor: 'rgba(0, 123, 255, 1)',
+                  borderWidth: 1,
+                  fill: false
+               }]
+            },
+            options: {
+               responsive: true,
+               scales: {
+                  y: {
+                     beginAtZero: true,
+                     grid: {
+                        color: '#666'
+                     },
+                     ticks: {
+                        color: '#fff'
+                     }
+                  },
+                  x: {
+                     grid: {
+                        color: '#666'
+                     },
+                     ticks: {
+                        color: '#fff'
+                     }
+                  }
+               }
+            }
+         });
+      }
+
+      async function createPieChart() {
+         const data = await fetchData();
+         if (!data) {
+            document.getElementById('pieChart').innerHTML = '<p>No data available.</p>';
+            return;
+         }
+
+         const patientData = extractPatientData(data);
+
+         const genderData = getGenderDistribution(patientData);
+         const labels = Object.keys(genderData);
+         const dataValues = Object.values(genderData);
+
+         const ctx = document.getElementById('pieChart').getContext('2d');
+         new Chart(ctx, {
+            type: 'pie',
+            data: {
+               labels: labels,
+               datasets: [{
+                  label: 'Gender Distribution',
+                  data: dataValues,
+                  backgroundColor: [
+                     'rgba(255, 165, 0, 0.6)',
+                     'rgba(0, 123, 255, 0.6)'
+                  ],
+                  borderColor: [
+                     'rgba(255, 165, 0, 1)',
+                     'rgba(0, 123, 255, 1)'
+                  ],
+                  borderWidth: 1
+               }]
+            },
+            options: {
+               responsive: true
+            }
+         });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+         createBarChart();
+         createLineChart();
+         createPieChart();
+      });
+
+      async function fetchUserById(tokenID) {
+         try {
+            const response = await fetch(`http://localhost:8080/patients/${tokenID}`);
+            if (!response.ok) {
+               throw new Error('Network response was not ok.');
+            }
+            const data = await response.json();
+            console.log('Fetched Data:', data); 
+            return data; 
+         } catch (error) {
+            console.error('Error fetching data:', error);
+            return null; 
+         }
+      }
+
+      async function searchUser() {
+         const tokenID = document.getElementById('tokenID').value;
+         if (!tokenID) {
+            alert('Please enter a token ID.');
+            return;
+         }
+
+         const data = await fetchUserById(tokenID);
+
+         if (!data || !data.tokenId) {
+            document.getElementById('data-container').innerHTML = '<p>No data available for the given ID.</p>';
+            return;
+         }
+
+         // Display the data in a table
+         const container = document.getElementById('data-container');
+         container.innerHTML = `
+            <table>
+               <thead>
+                  <tr>
+                     <th>Field</th>
+                     <th>Value</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr><td>Token ID</td><td>${data.tokenId}</td></tr>
+                  <tr><td>First Name</td><td>${data.firstName}</td></tr>
+                  <tr><td>Last Name</td><td>${data.lastName}</td></tr>
+                  <tr><td>Phone Number</td><td>${data.phoneNumber}</td></tr>
+                  <tr><td>Age</td><td>${data.age}</td></tr>
+                  <tr><td>Weight</td><td>${data.weight}</td></tr>
+                  <tr><td>Height</td><td>${data.height}</td></tr>
+                  <tr><td>Sex</td><td>${data.sex}</td></tr>
+                  <tr><td>Blood Pressure</td><td>${data.bp}</td></tr>
+                  <tr><td>Location</td><td>${data.location}</td></tr>
+               </tbody>
+            </table>
+         `;
+      }
+   </script>
+</body>
+</html>
