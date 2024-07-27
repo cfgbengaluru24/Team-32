@@ -1,4 +1,3 @@
-const express = require('express');
 const Oral = require('../schema/oral');
 
 const getOralDetails = {

@@ -12,6 +12,7 @@ const { postCombinedDataByToken } = require('./post_combined_patient_data');
 const { getCombinedDataByTokenId } = require('./get_combined_patient_details');
 const { getDataByLocation } = require('./get_user_data_by_location');
 const { getAllData } = require('./get_all_patients_data');
+const { uploadImages } = require('./post_upload_images');
 
 
 const routes = [
@@ -28,7 +29,8 @@ const routes = [
     postCombinedDataByToken,
     getCombinedDataByTokenId,
     getDataByLocation,
-    getAllData
+    getAllData,
+    uploadImages
 ];
 
 module.exports = { routes };
