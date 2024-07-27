@@ -31,3 +31,23 @@ body {
     text-wrap: balance;
   }
 }
+
+
+.gradient-button {
+  border: 2px solid;
+  border-image-slice: 2;
+  border-width: 2px;
+  border-image-source: linear-gradient(to right,#4535C1, #77E4C8);
+  border-color: linear-gradient(to right,#4535C1, #77E4C8);
+  background: transparent;
+  color: #4535C1;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.gradient-button:hover {
+  background: linear-gradient(to right,#4535C1, #77E4C8);
+  color: white;
+}
