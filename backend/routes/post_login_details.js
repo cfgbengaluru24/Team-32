@@ -5,8 +5,10 @@ const postLoginRoute = {
     path: '/login',
     method: 'post',
     handler: async (req, res) => {
+        console.log(req.body);
         const { username, password } = req.body;
-
+        console.log(username);
+        console.log("ran")
         // Input validation
         if (!username || !password) {
             return res.status(400).json({ msg: 'Please enter all fields' });
@@ -14,7 +16,7 @@ const postLoginRoute = {
 
         try {
             // Find user by username
-            let user = await Login.findOne({ username });
+            let user = await Login.findOne({ username:username });
             if (!user) {
                 return res.status(400).json({ msg: 'Invalid credentials' });
             }
