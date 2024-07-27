@@ -1,9 +1,20 @@
-const mongoose=require('mongoose')
-const anemiaSchema=new mongoose.Schema({
-    tokenId:Number,
-    haemoglobin:Number,
-    diagnosis:String,
-    treatment:String
-})
+const mongoose = require('mongoose');
 
-module.exports=mongoose.model('anemia',anemiaSchema)
+const anemiaSchema = new mongoose.Schema({
+    tokenId: {
+        type: Number,
+        required: true
+    },
+    haemoglobin: {
+        type: [Number], 
+        required: true
+    },
+    diagnosis: {
+        type: String,
+    },
+    treatment: {
+        type: String,
+    }
+});
+
+module.exports = mongoose.model('anemia', anemiaSchema);

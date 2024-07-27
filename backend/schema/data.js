@@ -44,10 +44,10 @@ const dataSchema = new Schema({
             required:true,
         },
         anemia: {
-            haemoglobin: {
+            haemoglobin: [{
                 type: Number,
                 required: true
-            },
+            }],
             diagnosis: {
                 type: String,
                 required: true
@@ -58,18 +58,18 @@ const dataSchema = new Schema({
             }
         },
         oralHealIndex: {
-            dIndex: {
+            dIndex: [{
                 type: Number,
                 required: true
-            },
-            cIndex: {
+            }],
+            cIndex: [{
                 type: Number,
                 required: true
-            },
-            photoUrl: {
+            }],
+            photoUrl: [{
                 type: String,
                 required: true
-            }
+            }]
         }
     }]
 });

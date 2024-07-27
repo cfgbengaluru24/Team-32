@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Anemia = require('../schema/anemia');
 
 const postAnemiaDetails = {
@@ -6,22 +7,44 @@ const postAnemiaDetails = {
     handler: async (req, res) => {
         const { tokenId, haemoglobin, diagnosis, treatment } = req.body;
 
-        if (!tokenId || !haemoglobin || !diagnosis || !treatment) {
-            return res.status(400).json({ msg: 'Please provide all required fields' });
+        // Input validation
+        if (!tokenId || !haemoglobin) {
+            return res.status(400).json({ msg: 'Please provide tokenId and haemoglobin' });
         }
 
         try {
-            const newAnemia = new Anemia({
-                tokenId,
-                haemoglobin,
-                diagnosis,
-                treatment
-            });
+            // Check if a document with the given tokenId already exists
+            const existingRecord = await Anemia.findOne({ tokenId });
 
+            if (existingRecord) {
+                // If exists, update the haemoglobin array by appending the new values
+                existingRecord.haemoglobin.push(haemoglobin); // Append new values
 
-            await newAnemia.save();
+                // Update diagnosis and treatment only if provided
+                if (diagnosis) {
+                    existingRecord.diagnosis = diagnosis;
+                }
+                if (treatment) {
+                    existingRecord.treatment = treatment;
+                }
 
-            res.status(201).json({ msg: 'Anemia details added successfully' });
+                // Save the updated record
+                await existingRecord.save();
+
+                res.status(200).json({ msg: 'Anemia details updated successfully' });
+            } else {
+                // If not exists, create a new record
+                const newAnemia = new Anemia({
+                    tokenId,
+                    haemoglobin:[haemoglobin],
+                    diagnosis,
+                    treatment
+                });
+
+                await newAnemia.save();
+
+                res.status(201).json({ msg: 'Anemia details added successfully' });
+            }
         } catch (err) {
             console.error(err.message);
             res.status(500).send('Server error');
@@ -29,4 +52,4 @@ const postAnemiaDetails = {
     }
 };
 
-module.exports.postAnemiaDetails=postAnemiaDetails
+module.exports.postAnemiaDetails = postAnemiaDetails;
