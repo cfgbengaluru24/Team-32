@@ -34,7 +34,7 @@ const removeData = async (key) => {
     console.error('Failed to delete data', e);
   }
 };
-const ScheduleVisitScreen = ({navigation}) => {
+const ScheduleScreen= ({navigation}) => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
@@ -61,7 +61,7 @@ const ScheduleVisitScreen = ({navigation}) => {
 
   const handleSubmit = () => {
     alert(`Visit scheduled on ${date.toLocaleString()} at ${location}`);
-    saveData(date.toDateString(),location)
+    saveData("@scheduledVisits"+(new Date).getTime().toLocaleString(),JSON.stringify({location,date}));
     navigation.navigate('WelcomeDoc')
     console.log(date.toLocaleString())
   };
@@ -122,5 +122,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScheduleVisitScreen;
+export default ScheduleScreen;
 

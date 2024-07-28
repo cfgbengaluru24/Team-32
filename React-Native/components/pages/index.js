@@ -37,15 +37,21 @@ const removeData = async (key) => {
 export default function HomeScreen({navigation}) {
   const router = useRouter();
 
-  
+  let isLogin=null;
   useEffect( async() => {
     let timer;
 
-    const isLogin = getData("isLogin");
-    if(isLogin===null||isLogin!=="true"){
+     isLogin = await getData("isLogin");
+     console.log(isLogin);
+    if(isLogin===null){
          timer = setTimeout(() => {
             navigation.navigate("Login");
           }, 10000);
+    }
+    else if(isLogin=="true"){
+      timer = setTimeout(() => {
+        navigation.navigate("PocCamera");
+      }, 10000); 
     }
     else{
         timer = setTimeout(() => {
@@ -54,7 +60,7 @@ export default function HomeScreen({navigation}) {
     }
     // Cleanup timeout on component unmount
     return () => clearTimeout(timer);
-  }, [router]);
+  }, [isLogin]);
 
   return (
     <View style={styles.titleContainer}>

@@ -18,6 +18,7 @@ const Navigation = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ScheduleVisit" component={ScheduleVisitScreen} />
+        <Stack.Screen name="patientInformation" component={PatientInformation}/>
         <Stack.Screen name="OralHealth" component={OralHealthScreen} />
         <Stack.Screen name="AnemiaForm" component={AnemiaFormScreen} />
         <Stack.Screen name="POCConnect" component={POCConnectScreen} />

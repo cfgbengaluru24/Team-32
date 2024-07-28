@@ -4,6 +4,7 @@ const getDataByLocation = {
     path: '/data/loc/:location',
     method: 'get',
     handler: async (req, res) => {
+        
         const { location } = req.params;
         console.log(`Received location: ${location}`);
         

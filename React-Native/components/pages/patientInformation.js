@@ -1,7 +1,8 @@
 // screens/PatientInformation.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-
+import { View,ScrollView, Text, TextInput, StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
+import { saveInitialDataLocally } from '../../hooks/pocDatahook';
 const PatientInformation = ({ navigation }) => {
   const [patientDetails, setPatientDetails] = useState({
     firstName: '',
@@ -24,11 +25,12 @@ const PatientInformation = ({ navigation }) => {
 
   const handleSubmit = () => {
     console.log('Patient Details:', patientDetails);
-    navigation.navigate('FormSelection', { patientDetails });
+    saveInitialDataLocally(patientDetails, null);
+    navigation.navigate('ChooseTypeOfInfo');
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Patient Data</Text>
       <TextInput
         style={styles.input}
@@ -96,8 +98,10 @@ const PatientInformation = ({ navigation }) => {
       <Button
         title="Submit"
         onPress={handleSubmit}
-      />
-    </View>
+        mode="contained" 
+        buttonColor="#023047"
+      >Submit</Button>
+    </ScrollView>
   );
 };
 

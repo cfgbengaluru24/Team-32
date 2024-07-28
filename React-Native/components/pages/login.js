@@ -61,11 +61,17 @@ const LoginScreen = ({navigation}) => {
     }
     Alert.alert('Success', `Welcome ${username}!`);
     console.log(responseData)
-    saveData("isLogin","true");
+    saveData("isLogin","meghanaa");
+    if(responseData.isAdmin){
     navigation.navigate("WelcomeDoc")
+    }
+    else{
+      navigation.navigate("PocCamera")
+    }
   };
 
   return (
+
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput

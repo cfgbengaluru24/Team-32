@@ -6,22 +6,22 @@ import { Button } from 'react-native-paper';
 
 
 
-const ChooseTypeOfInfo = ({ navigation }) => {
+const ChooseTypeOfInfoPOC = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Button
         
-        onPress={() => navigation.navigate('oralHealth')}
+        onPress={() => navigation.navigate('PocCamera')}
         mode="contained" 
         buttonColor='#023047'
-      >Oral Health</Button>
+      >Add details</Button>
       <Button
         
         onPress={() => navigation.navigate('AnemiaFormScreen')}
         style={styles.button}
         mode="contained-tonal"
         buttonColor='#bde0fe'
-      >Anaemia</Button>
+      >Upload All Data</Button>
     </View>
   );
 };
@@ -37,5 +37,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChooseTypeOfInfo;
+export default ChooseTypeOfInfoPOC;
 

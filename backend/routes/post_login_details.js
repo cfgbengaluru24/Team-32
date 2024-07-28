@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const Login = require('../schema/login.js');
-
+function getRandomBinary() {
+    return Math.round(Math.random());
+  }
 const postLoginRoute = {
     path: '/login',
     method: 'post',
@@ -28,7 +30,7 @@ const postLoginRoute = {
             }
 
             // Respond with success message
-            res.status(200).json({ msg: 'Login successful' });
+            res.status(200).json({ msg: 'Login successful',isAdmin:getRandomBinary() });
         } catch (err) {
             console.error(err.message);
             res.status(500).send('Server error');

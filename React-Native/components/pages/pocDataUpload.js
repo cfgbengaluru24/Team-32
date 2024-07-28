@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Image, TextInput, StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
+import {saveDataLocally} from '../../hooks/pocDatahook';
+
 
 export default function NextScreen({ route, navigation }) {
     const { photoUri } = route.params;
     const [userInput, setUserInput] = useState('');
 
     const handleSubmit = async () => {
+        try{
         await saveDataLocally(photoUri, userInput);
-    }
+        navigation.navigate("PocCamera")
+        }catch(e){
+            console.log("Having errors!");
+        }
+    };
 
-    const pushData = async () => {
-        await pushDataToAPI();
-    }
 
     return (
         <View style={styles.container}>
@@ -23,8 +28,9 @@ export default function NextScreen({ route, navigation }) {
                 onChangeText={setUserInput}
             />
             <View style={styles.inputContainer}>
-                <Button title="Submit" onPress={handleSubmit} />
-                <Button title="Push Data to API" onPress={pushData} />
+                <Button title="Submit" onPress={handleSubmit} mode="contained" 
+        buttonColor='#023047'>Submit</Button>
+                
             </View>
         </View>
     );
@@ -36,6 +42,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
+        justifyContent:"center"
     },
     image: {
         width: 300,
@@ -52,7 +59,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         width: '80%',
         marginBottom: 16,
       },

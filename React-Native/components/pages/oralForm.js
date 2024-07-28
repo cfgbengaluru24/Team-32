@@ -1,10 +1,12 @@
 // screens/OralHealthScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Switch, Dimensions } from 'react-native';
 //import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'react-native-paper';
+import {saveOralLocally} from '../../hooks/pocDatahook'
 
 
-
+const { width, height } = Dimensions.get('window');
 const OralHealthScreen = ({ navigation }) => {
   const [patientDetails, setPatientDetails] = useState({
     debrisIndex: '',
@@ -15,7 +17,7 @@ const OralHealthScreen = ({ navigation }) => {
     
   });
   const [showAnemiaForm, setShowAnemiaForm] = useState(false);
-  const [tokenId, setTokenId] = useState(uuidv4());
+  const [tokenId, setTokenId] = useState();
 
   const handleInputChange = (name, value) => {
     setPatientDetails({
@@ -27,7 +29,8 @@ const OralHealthScreen = ({ navigation }) => {
   const handleSubmit = () => {
     console.log('Patient Details:', patientDetails);
     console.log('Token ID:', tokenId);
-    navigation.navigate('AnemiaForm', { tokenId });
+    saveOralLocally(null, patientDetails.tokenId, patientDetails.dIndex, patientDetails.cIndex)
+    navigation.navigate('WelcomeDoc', { tokenId });
   };
 
   return (
@@ -48,14 +51,14 @@ const OralHealthScreen = ({ navigation }) => {
       
        <TextInput
         style={styles.input}
-        placeholder="phoneNumber"
+        placeholder="tokenId"
         value={patientDetails.phoneNumber}
-        onChangeText={(text) => handleInputChange('phoneNumber', text)}
+        onChangeText={(text) => handleInputChange('tokenId', text)}
         keyboardType="numeric"
       />
       
       
-      <View style={styles.switchContainer}>
+      {/* <View style={styles.switchContainer}>
         <Text style={styles.label}>Show Anemia Form</Text>
         <Switch
           value={showAnemiaForm}
@@ -67,7 +70,10 @@ const OralHealthScreen = ({ navigation }) => {
           title="Go to Anemia Form"
           onPress={handleSubmit}
         />
-      )}
+      )} */}
+      <Button title="Login" onPress={handleSubmit} mode="contained" 
+        buttonColor='#023047'>Submit </Button>
+
     </View>
   );
 };
@@ -77,6 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+    container: 2*height
   },
   title: {
     fontSize: 24,
