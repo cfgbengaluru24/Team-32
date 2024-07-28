@@ -19,6 +19,10 @@ const postLoginRoute = {
         try {
             // Find user by username
             let user = await Login.findOne({ username:username });
+            const isAdmin=user.isAdmin
+            if(!isAdmin){
+                return res.status(400).json({ msg: 'Not an admin' });
+            }
             if (!user) {
                 return res.status(400).json({ msg: 'Invalid credentials' });
             }
