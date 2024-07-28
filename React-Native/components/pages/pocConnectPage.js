@@ -1,49 +1,109 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, TouchableOpacity, Image } from 'react-native';
-// import { Camera } from 'expo-camera';
+import React, { useState, useRef } from 'react';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// const PocConnectPage = () => {
-//     const [hasPermission, setHasPermission] = useState(null);
-//     const [camera, setCamera] = useState(null);
-//     const [photo, setPhoto] = useState(null);
 
-//     useEffect(() => {
-//         (async () => {
-//             const { status } = await Camera.requestPermissionsAsync();
-//             setHasPermission(status === 'granted');
-//         })();
-//     }, []);
+export default function PocConnectPage({ navigation }) {
+    const [facing, setFacing] = useState('back');
+    const [permission, requestPermission] = useCameraPermissions();
+    const [photo, setPhoto] = useState(null);
+    const cameraRef = useRef(null);
 
-//     const takePicture = async () => {
-//         if (camera) {
-//             const photoData = await camera.takePictureAsync();
-//             setPhoto(photoData.uri);
-//         }
-//     };
 
-//     if (hasPermission === null) {
-//         return <View />;
-//     }
-//     if (hasPermission === false) {
-//         return <Text>No access to camera</Text>;
-//     }
+    if (!permission) {
+        return <View />;
+    }
 
-//     return (
-//         <View style={{ flex: 1 }}>
-//             <Camera
-//                 style={{ flex: 1 }}
-//                 type={Camera.Constants.Type.back}
-//                 ref={(ref) => setCamera(ref)}
-//             >
-//                 <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row' }}>
-//                     <TouchableOpacity style={{ flex: 0.1, alignSelf: 'flex-end', alignItems: 'center' }} onPress={takePicture}>
-//                         <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>Take Picture</Text>
-//                     </TouchableOpacity>
-//                 </View>
-//             </Camera>
-//             {photo && <Image source={{ uri: photo }} style={{ flex: 1 }} />}
-//         </View>
-//     );
-// };
+    if (!permission.granted) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.message}>We need your permission to show the camera</Text>
+                <Button onPress={requestPermission} title="grant permission" />
+            </View>
+        );
+    }
 
-// export default PocConnectPage;
+    function toggleCameraFacing() {
+        if (facing === 'front') {
+            setFacing('back');
+        } else {
+            setFacing('front');
+        }
+    }
+
+    const takePicture = async () => {
+        try {
+            if (cameraRef.current) {
+                const photo = await cameraRef.current.takePictureAsync();
+                setPhoto(photo);
+                navigation.navigate('displayPhotoPage', {
+                    photoUri: photo.uri
+                });
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.shutterButton} onPress={takePicture}>
+                    </TouchableOpacity>
+                </View>
+            </CameraView>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    message: {
+        textAlign: 'center',
+        paddingBottom: 10,
+    },
+    camera: {
+        flex: 1,
+    },
+    buttonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: 'transparent',
+        margin: 64,
+    },
+    button: {
+        flex: 1,
+        alignSelf: 'top',
+        alignItems: 'center',
+        backgroundColor: '',
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+
+    },
+    text: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    shutterButton: {
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 20,
+        left: 100,
+        alignSelf: 'center',
+    },
+    shutterText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+});
