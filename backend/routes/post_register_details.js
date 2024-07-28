@@ -5,7 +5,7 @@ const postRegisterDetails = {
     path: '/register',
     method: 'post',
     handler: async (req, res) => {
-        const { username, password } = req.body;
+        const { username, password,isAdmin } = req.body;
 
         // Input validation
         if (!username || !password) {
@@ -22,7 +22,8 @@ const postRegisterDetails = {
             // Create new user instance
             user = new Login({
                 username,
-                password
+                password,
+                isAdmin
             });
 
             // Save user to database
